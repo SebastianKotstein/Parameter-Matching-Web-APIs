@@ -1,24 +1,61 @@
-from pipeline.input_tokenizer import InputTokenizer
-from pipeline.qa_model import QAModel
-from pipeline.output_interpreter import OutputInterpreter
+
+from flask import Flask, request, jsonify
+from pipeline.pipeline import Pipeline
+import json
 
 
+app = Flask(__name__)
+pipeline = Pipeline("SebastianKotstein/restberta-qa-parameter-matching",20,2)
+
+@app.route("/",methods=["POST"])
+def api():
+    args = request.args
+    top_answers_n = None
+
+    suppress_duplicates = False
+    if "duplicates" in args and args["duplicates"] == "suppress":
+        suppress_duplicates = True
+
+    if "top" in args and args["top"]:
+        top_answers_n = int(args["top"])
+
+    return jsonify(pipeline.process(request.json,top_answers_n,suppress_duplicates))
+
+'''
 if __name__ == '__main__':
-    tokenizer = InputTokenizer("microsoft/codebert-base")
-    model = QAModel("SebastianKotstein/restberta-qa-parameter-matching")
-    interpreter = OutputInterpreter(20)
-    
+    pipeline = Pipeline("SebastianKotstein/restberta-qa-parameter-matching",20,2)
 
-    batch = {
-        "qa_sample_id":["1","2"],
-        "qa_sample_title":["Test1","Test2"],
-        "qa_sample_query":["The ZIP","The token"],
-        "qa_sample_paragraph_id": ["P1","P2"],
-        "qa_sample_paragraph_title": ["Payload1","Payload2"],
-        "qa_sample_paragraph":["auth.key location.city location.city_id location.country location.lat location.lon location.postal_code state units","auth.key location.city location.city_id location.country location.lat location.lon location.postal_code state units"],
-        "verbose_output":[False,False]
+    input = {
+        "schemas":[
+            {
+                "schemaId": "s1",
+                "name": "testSchema",
+                "value": "auth.key location.city location.city_id location.country location.lat location.lon location.postal_code state units", 
+                "queries":[
+                    {
+                        "queryId": "q1",
+                        "name": "first query",
+                        "value": "The ZIP",
+                        "verboseOutput":False
+                    },
+                    {
+                        "queryId": "q2",
+                        "name": "second query",
+                        "value": "The auth token",
+                        "verboseOutput":False
+                    }
+                    
+                ]
+            },
+            {
+                "schemaId": "s2",
+                "name": "schemaWoQueries",
+                "value": "none",
+                "queries":[]
+            }
+        ]
     }
-    tokenized_samples = tokenizer.tokenize(batch)
-    output, batch_size = model.predict(tokenized_samples)
-    results = interpreter.interpret_output(tokenized_samples,output,batch_size,True)
-    print(results)
+
+    results = pipeline.process(input)
+    print(json.dumps(results, indent=2))
+'''

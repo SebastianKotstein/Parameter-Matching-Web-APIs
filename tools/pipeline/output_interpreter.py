@@ -24,27 +24,7 @@ class OutputInterpreter:
     def interpret_output(self, tokenized_samples, model_output, batch_size, suppress_duplicates = False):
         
         # TODO: Convert score to str in a final step, i.e., after processing results (instead of converting it temporarily back to float for sorting)
-        
-        results = dict()
-
-        # ID of the sample (string), e.g. "7fed77b9abe24a2db869c8b9919a1e9b"
-        results["qa_sample_id"] = []
-        # Title of the sample (string), e.g. "my very urgent question"
-        results["qa_sample_title"] = []
-        # Query, i.e., query, of the sample (string), e.g. "The name of a user"
-        results["qa_sample_query"] = []
-
-        # ID of the paragraph (string), e.g. "7fed77b9abe24a2db869c8b9919a1e9b"
-        results["qa_sample_paragraph_id"] = []
-        # Title of the paragraph (string), e.g. "schema XYZ"
-        results["qa_sample_paragraph_title"] = []
-        # Paragraph (context) of the sample (string), e.g. "users[*].id users[*].name _links.href _links.rel"
-        results["qa_sample_paragraph"] = []
-
-        # ranked list of answers over all tokenized samples
-        results["answers"] = []
-        # list of tokenized samples and their results
-        results["tokenized_sample"] = []
+        results = self.create_empty_results_dict()
 
         for i in range(batch_size):
             # create and append result entry to the list of results
@@ -65,7 +45,7 @@ class OutputInterpreter:
                 results["qa_sample_paragraph"].append(tokenized_samples["qa_sample_paragraph"][i])
 
                 # append empty list of tokenized samples to the list of results
-                results["tokenized_sample"].append([])
+                results["tokenized_samples"].append([])
 
             # query index of result entry 
             index = list(results["qa_sample_id"]).index(tokenized_samples["qa_sample_id"][i])    
@@ -89,14 +69,14 @@ class OutputInterpreter:
             tokenized_sample["answers"] = answers
 
             # append tokenized sample and its result to the list of results
-            results["tokenized_sample"][index].append(tokenized_sample)
+            results["tokenized_samples"][index].append(tokenized_sample)
         
 
         for i in range(len(results["qa_sample_id"])):
             # prepare list of combined answers, i.e., answers over all tokenized samples
             combined_answers = []
             # iterate over all tokenized samples of QA sample
-            for tokenized_sample in results["tokenized_sample"][i]:
+            for tokenized_sample in results["tokenized_samples"][i]:
                 # iterate over all answers of tokenized sample
                 for answer in tokenized_sample["answers"]:
                     # append answer of tokenized sample if it is NOT an out of span answer
@@ -107,6 +87,30 @@ class OutputInterpreter:
             combined_answers = sorted(combined_answers, key=lambda x: float(x["score"]), reverse=True)
             results["answers"].append(combined_answers)
         
+        return results
+    
+    def create_empty_results_dict(self):
+        results = dict()
+
+        # ID of the sample (string), e.g. "7fed77b9abe24a2db869c8b9919a1e9b"
+        results["qa_sample_id"] = []
+        # Title of the sample (string), e.g. "my very urgent question"
+        results["qa_sample_title"] = []
+        # Query, i.e., query, of the sample (string), e.g. "The name of a user"
+        results["qa_sample_query"] = []
+
+        # ID of the paragraph (string), e.g. "7fed77b9abe24a2db869c8b9919a1e9b"
+        results["qa_sample_paragraph_id"] = []
+        # Title of the paragraph (string), e.g. "schema XYZ"
+        results["qa_sample_paragraph_title"] = []
+        # Paragraph (context) of the sample (string), e.g. "users[*].id users[*].name _links.href _links.rel"
+        results["qa_sample_paragraph"] = []
+
+        # ranked list of answers over all tokenized samples
+        results["answers"] = []
+        # list of tokenized samples and their results
+        results["tokenized_samples"] = []
+
         return results
 
     def identify_properties(self,context,start_char_index,end_char_index):
