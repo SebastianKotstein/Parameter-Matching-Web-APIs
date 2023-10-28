@@ -20,6 +20,13 @@ from .qa_model import QAModel
 from .output_interpreter import OutputInterpreter
 from .lru_cache import LRUCache
 
+import uuid
+
+class InvalidRequestException(Exception):
+    def __init__(self, message="Invalid request") -> None:
+        self.message = message
+        super().__init__(self.message)
+
 class Pipeline:
     def __init__(self, model_checkpoint, best_size = 20, cache_size = 1000) -> None:
         self.tokenizer = InputTokenizer("microsoft/codebert-base")
@@ -80,8 +87,38 @@ class Pipeline:
                 "qa_sample_paragraph":[],
                 "verbose_output":[]
             }
-            for schema in input_dict["schemas"]:
-                for query in schema["queries"]:
+            if "schemas" not in input_dict:
+                raise InvalidRequestException("The request does not contain a list of schemas, i.e., '$.schemas[*]'")
+            if not len(input_dict["schemas"]):
+                raise InvalidRequestException("The list of schemas, i.e., '$.schemas[*]', must contain at least one schema item")
+
+            for i,schema in enumerate(input_dict["schemas"]):
+                if "value" not in schema:
+                    raise InvalidRequestException("The schema '$.schemas["+str(i)+"]' has no property 'value'")
+                if not schema["value"]:
+                    raise InvalidRequestException("'$.schemas["+str(i)+"].value' must not be empty")
+                if "schemaId" not in schema:
+                    schema["schemaId"] = str(uuid.uuid4())
+                if "name" not in schema:
+                    schema["name"] = "schema "+schema["schemaId"]
+
+                if "queries" not in schema:
+                    raise InvalidRequestException("The schema '$.schemas["+str(i)+"]' has no list of queries, i.e., '$.schemas["+str(i)+"].queries[*]'")
+                if not len(schema["queries"]):
+                    raise InvalidRequestException("'$.schemas["+str(i)+"].queries[*]' must contain at least one query item")
+                
+                for j,query in enumerate(schema["queries"]):
+                    if "value" not in query:
+                        raise InvalidRequestException("The query '$.schemas["+str(i)+"].queries["+str(j)+"]' has no property 'value'")
+                    if not query["value"]:
+                        raise InvalidRequestException("'$.schemas["+str(i)+"].queries["+str(j)+"].value' must not be empty")
+                    if "queryId" not in query:
+                        query["queryId"] = str(uuid.uuid4())
+                    if "name" not in query:
+                        query["name"] = "query "+query["queryId"]
+                    if "verboseOutput" not in query:
+                        query["verboseOutput"] = False
+
                     if not self.cache.has(schema["value"],query["value"],query["verboseOutput"]):
                         batch["qa_sample_id"].append(query["queryId"])
                         batch["qa_sample_title"].append(query["name"])
