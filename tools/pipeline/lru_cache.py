@@ -57,14 +57,14 @@ class LRUCache:
         if not self.has(schema,query,False) and len(self.results.values()) == self.max_size:
             sorted_keys = sorted(self.access_counters)
             self.evict(sorted_keys[0])
+        
+        key = self.generate_key(schema,query)
         if self.debug:
-            key = self.generate_key(schema,query)
-            if self.debug:
-                print("Store "+key)    
-            self.results[key] = result.copy()
-            self.verbose_info[key] = verbose
-            self.access_counter+=1
-            self.access_counters[key] = self.access_counter
+            print("Store "+key)    
+        self.results[key] = result.copy()
+        self.verbose_info[key] = verbose
+        self.access_counter+=1
+        self.access_counters[key] = self.access_counter
 
 
     def evict(self, schema: str, query: str):
