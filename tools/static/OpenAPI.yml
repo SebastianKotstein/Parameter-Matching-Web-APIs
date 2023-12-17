@@ -152,96 +152,92 @@ components:
           description: "List of submitted schemas"
           items:
             type: object
-            description: "Schema object"
+            description: "Submitted schema"
             properties:
-              items:
-                type: object
-                description: "Submitted schema"
-                properties:
-                  schemaId:
-                    type: string
-                    example: "s0"
-                    description: "Specified schema identifier. This property is assigned a auto-generated UUID if no identifier has been specified."
-                  name:
-                    type: string
-                    example: "My schema"
-                    description: "The specified name of the schema. This property is assigned a auto-generated name consisting of the schema identifier prefixed with 'Schema ' if not name has been specified."
-                  value:
-                    type: string
-                    example: "auth.key location.city location.city_id location.country location.lat location.lon location.postal_code state units"
-                    description: "Space separated list of Web API elements of the schema."
-                  queries:
-                    type: array
-                    description: "List of results for each query"
-                    items:
+              schemaId:
+                type: string
+                example: "s0"
+                description: "Specified schema identifier. This property is assigned a auto-generated UUID if no identifier has been specified."
+              name:
+                type: string
+                example: "My schema"
+                description: "The specified name of the schema. This property is assigned a auto-generated name consisting of the schema identifier prefixed with 'Schema ' if not name has been specified."
+              value:
+                type: string
+                example: "auth.key location.city location.city_id location.country location.lat location.lon location.postal_code state units"
+                description: "Space separated list of Web API elements of the schema."
+              queries:
+                type: array
+                description: "List of results for each query"
+                items:
+                  type: object
+                  description: "Result object"
+                  properties:
+                    queryId:
+                      type: string
+                      example: "q0"
+                      description: "Specified query identifier. This property is assigned a auto-generated UUID if no identifier has been specified."
+                    name:
+                      type: string
+                      example: "My query"
+                      description: "The specified name of the query. This property is assigned a auto-generated name consisting of the schema identifier prefixed with 'Schema ' if not name has been specified."
+                    value:
+                      type: string
+                      example: "The ZIP of the city"
+                      description: "The query in natural language"
+                    verboseOutput:
+                      type: boolean
+                      description: "Verbose output flag of the query."
+                    result:
                       type: object
-                      description: "Result object"
+                      description: "The result object containing the answers"
                       properties:
-                        queryId:
-                          type: string
-                          example: "q0"
-                          description: "Specified query identifier. This property is assigned a auto-generated UUID if no identifier has been specified."
-                        name:
-                          type: string
-                          example: "My query"
-                          description: "The specified name of the query. This property is assigned a auto-generated name consisting of the schema identifier prefixed with 'Schema ' if not name has been specified."
-                        value:
-                          type: string
-                          example: "The ZIP of the city"
-                          description: "The query in natural language"
-                        verboseOutput:
+                        answers:
+                          type: array
+                          description: "Ranked list of suggested Web API elements over all tokenized samples sorted by score"
+                          items:
+                            $ref: "#/components/schemas/answer"
+                        isCached:
                           type: boolean
-                          description: "Verbose output flag of the query."
-                        result:
-                          type: object
-                          description: "The result object containing the answers"
-                          properties:
-                            answers:
-                              type: array
-                              description: "Ranked list of suggested Web API elements over all tokenized samples sorted by score"
-                              items:
-                                $ref: "#/components/schemas/answer"
-                            isCached:
-                              type: boolean
-                              example: true
-                              description: "Flag indicating whether the returned answers had been loaded from cache"
-                            tokenizedSamples:
-                              type: array
-                              description: "List of processed tokenized samples and their individual predicted answer spans"
-                              items:
-                                type: object
-                                description: "The result object for a tokenized sample containing its answers"
-                                properties:
-                                  answers:  
-                                    items:  
-                                      $ref: "#/components/schemas/answer"
-                                  fragment:
-                                    type: string
-                                    example: "auth.key location.city location.city_id location.country"
-                                    description: "Fragment of the original schema that is covered in this tokenized sample. This property is 'null', if the 'verboseOutput' flag is set to 'false'."
-                                  fragment_tokens:
-                                    type: array
-                                    description: "Tokens of the original schema that are covered in this tokenized sample. This property is 'null', if the 'verboseOutput' flag is set to 'false'."
-                                    items:
-                                      type: string
-                                      example: 
-                                        - "Ġlocation"
-                                        - "."
-                                        - "city"
-                                  tokens:
-                                    type: array
-                                    description: "All tokens of this tokenized samples. This includes the tokens of the query plus the tokens of the fragment plus special tokens. This property is 'null', if the 'verboseOutput' flag is set to 'false'."
-                                    items:
-                                      type: string
-                                      example:
-                                        - "<s>"
-                                        - "The"
-                                        - "ĠZIP"
-                                        - "</s>"
-                                        - "Ġlocation"
-                                        - "."
-                                        - "city"
-                                        - "<pad>"
+                          example: true
+                          description: "Flag indicating whether the returned answers had been loaded from cache"
+                        tokenizedSamples:
+                          type: array
+                          description: "List of processed tokenized samples and their individual predicted answer spans"
+                          items:
+                            type: object
+                            description: "The result object for a tokenized sample containing its answers"
+                            properties:
+                              answers:  
+                                items:  
+                                  $ref: "#/components/schemas/answer"
+                              fragment:
+                                type: string
+                                example: "auth.key location.city location.city_id location.country"
+                                description: "Fragment of the original schema that is covered in this tokenized sample. This property is 'null', if the 'verboseOutput' flag is set to 'false'."
+                              fragment_tokens:
+                                type: array
+                                description: "Tokens of the original schema that are covered in this tokenized sample. This property is 'null', if the 'verboseOutput' flag is set to 'false'."
+                                items:
+                                  type: string
+                                  example: 
+                                    - "Ġlocation"
+                                    - "."
+                                    - "city"
+                              tokens:
+                                type: array
+                                description: "All tokens of this tokenized samples. This includes the tokens of the query plus the tokens of the fragment plus special tokens. This property is 'null', if the 'verboseOutput' flag is set to 'false'."
+                                items:
+                                  type: string
+                                  example:
+                                    - "<s>"
+                                    - "The"
+                                    - "ĠZIP"
+                                    - "</s>"
+                                    - "Ġlocation"
+                                    - "."
+                                    - "city"
+                                    - "<pad>"
         _links:
           type: array
           items:
