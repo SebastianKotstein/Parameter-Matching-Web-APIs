@@ -102,8 +102,6 @@ def base():
         })
         response.mimetype = MIME_TYPE_HYPERMEDIA_V1_JSON
         return response
-    
-from flask import send_from_directory
 
 @app.route('/openapi.yml')
 def send_docs():
