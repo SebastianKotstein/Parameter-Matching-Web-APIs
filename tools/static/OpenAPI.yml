@@ -18,7 +18,7 @@ components:
             example: "/"
     error:
       type: object
-      description: "Error objectS"
+      description: "Error object"
       properties:
         timestamp:
           type: string
@@ -96,7 +96,7 @@ components:
               - queries
     answer:
       type: object
-      description: "Suggest Web API element"
+      description: "Suggested Web API element"
       properties:
         start_char_index:
           type: integer
