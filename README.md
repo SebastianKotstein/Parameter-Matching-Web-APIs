@@ -3,6 +3,16 @@ This repository is the official implementation of the paper ["Semantic Parameter
 Additional materials (datasets, model checkpoints, and reports of executed notebooks) can be found on [Zenodo](https://zenodo.org/records/8019625).
 The fine-tuned model (best checkpoint with an top-k accuracy of 81.46% for k=1) is available on [Hugging Face](https://huggingface.co/SebastianKotstein/restberta-qa-parameter-matching).
 
+## Tools
+Create docker image:
+```
+docker build -t restberta-core
+```
+Run docker image:
+```
+docker run -d -p 80:80 --name pm-cpu restberta-core
+```
+
 ## Citation
 ```bibtex
 @INPROCEEDINGS{10.1109/SOSE58276.2023.00020,
