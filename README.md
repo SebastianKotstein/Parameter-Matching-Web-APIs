@@ -8,9 +8,13 @@ Create docker image:
 ```
 docker build -t restberta-core
 ```
-Run docker image:
+Run docker container:
 ```
 docker run -d -p 80:80 --name pm-cpu restberta-core
+```
+Run docker container for endpoint discovery (see [RESTBERTa](https://github.com/SebastianKotstein/RESTBERTa)):
+```
+docker run -d -p 80:80 -e MODEL=SebastianKotstein/restberta-qa-endpoint-discovery --name ed-cpu restberta-core
 ```
 
 ## Citation
