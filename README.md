@@ -17,20 +17,19 @@ If you want to start the application for another Web API integration task, i.e.,
 ```
 docker run -d -p 80:80 -e MODEL=SebastianKotstein/restberta-qa-endpoint-discovery --name ed-cpu restberta-core
 ```
+### Web UI
 To open the Web UI, use a browser and navigate to http://localhost:80.
-To access the Web API, set the ```Accept``` header to ```application/json``` or ```application/vnd.skotstein.restberta-core.hypermedia.v1+json```:
-```
-curl --location --request GET 'http://localhost:80/' --header 'Accept: application/vnd.skotstein.restberta-core.hypermedia.v1+json'
-```
+
+### Web API
 Use the following cURL to make a prediction:
 ```
-curl --location 'http://localhost:80/predict' \
---header 'Accept: application/vnd.skotstein.restberta-core.results.v1+json' \
---header 'Content-Type: application/vnd.skotstein.restberta-core.schemas.v1+json' \
---data ' {
+curl -L 'http://localhost:80/predict' \
+-H 'Accept: application/vnd.skotstein.restberta-core.results.v1+json' \
+-H 'Content-Type: application/vnd.skotstein.restberta-core.schemas.v1+json' \
+-d ' {
  "schemas":[
     {
-      "schemaId": "s0",
+      "schemaId": "s00",
       "name": "My schema",
       "value": "state units auth.key location.city location.city_id location.country location.lat location.lon location.postal_code",
       "queries": [
@@ -45,7 +44,6 @@ curl --location 'http://localhost:80/predict' \
   ]
 }'
 ```
-
 
 ## Citation
 ```bibtex
