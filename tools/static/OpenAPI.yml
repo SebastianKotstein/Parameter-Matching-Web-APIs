@@ -114,6 +114,10 @@ components:
           type: string
           example: "1.1224375"
           description: "Calculated score of the predicted answer span, which is the sum of the logits of start and end of the answer span"
+        probability:
+          type: string
+          example: "80.24"
+          description: "Calculated probability (softmax) over all scores. This is an experimental feature and should be treated with caution."
         property:
           type: object
           description: "The suggested Web API element resulting from the predicted answer span"

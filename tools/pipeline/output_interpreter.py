@@ -413,8 +413,12 @@ class OutputInterpreter:
                     without_duplicates[answer["property"]["name"]] = answer
                     
             sorted_valid_answer = [x for x in without_duplicates.values()]
+
+        scores = np.array([answer["score"] for answer in sorted_valid_answer])
+        softmax = np.exp(scores)/sum(np.exp(scores))
         
         for i in range(len(sorted_valid_answer)):
             sorted_valid_answer[i]["score"] = str(sorted_valid_answer[i]["score"])
+            sorted_valid_answer[i]["probability"] = str(softmax[i])
             
         return sorted_valid_answer
