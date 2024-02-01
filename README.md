@@ -7,7 +7,7 @@ The fine-tuned model (best checkpoint with a top-k accuracy of 81.46% for k=1) i
 We implemented a Flask application that places our model behind a Web API and UI for inference.
 To use this application, navigate to [tools](https://github.com/SebastianKotstein/Parameter-Matching-Web-APIs/tree/master/tools) and create a docker image with:
 ```
-docker build -t restberta-core
+docker build -t restberta-core .
 ```
 Start the docker container with:
 ```
