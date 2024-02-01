@@ -11,7 +11,7 @@ docker build -t restberta-core .
 ```
 Start the docker container with:
 ```
-docker run -d -p 80:80 --name pm-cpu restberta-core .
+docker run -d -p 80:80 --name pm-cpu restberta-core
 ```
 If you want to start the application for another Web API integration task, i.e., with another RESTBERTa model (e.g., for endpoint discovery, see [RESTBERTa](https://github.com/SebastianKotstein/RESTBERTa)), specify the model as ENV parameter:
 ```
