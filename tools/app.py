@@ -24,8 +24,34 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from representations import *
 from content_negotiation import *
 
+import os
+
 app = Flask(__name__,static_folder='static')
-pipeline = Pipeline("SebastianKotstein/restberta-qa-parameter-matching",20,2)
+
+MODEL_PM = "SebastianKotstein/restberta-qa-parameter-matching"
+MODEL_ED = "SebastianKotstein/restberta-qa-endpoint-discovery"
+MODEL_ED_PM = "SebastianKotstein/restberta-qa-pm-ed"
+
+#model = os.getenv("MODEL",default=MODEL_PM)
+if "MODEL" in os.environ:
+    model = os.environ["MODEL"]
+else:
+    model = MODEL_PM
+
+#best_size = os.getenv("BEST_SIZE",default=20)
+if "BEST_SIZE" in os.environ:
+    best_size = int(os.environ["BEST_SIZE"])
+else:
+    best_size = 20
+
+#cache_size = os.getenv("CACHE",default=100)   
+if "CACHE" in os.environ:
+    cache_size = int(os.environ["CACHE"])
+else:
+    cache_size = 100
+
+print("Model: ",model)
+pipeline = Pipeline(model,best_size,cache_size)
 
 SWAGGER_URL = '/docs' 
 OPEN_API_FILE = '/openapi.yml'  
@@ -47,6 +73,22 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     # }
 )
 
+if model == MODEL_PM:
+    header = "RESTBERTa Parameter Matching"
+    paragraph = "Schema"
+    answer = "Parameter"
+    example = "auth.key location.city location.city_id location.country location.lat location.lon location.postal_code state units"
+elif model == MODEL_ED:
+    header = "RESTBERTa Endpoint Discovery"
+    paragraph = "List of Endpoints"
+    answer = "Endpoint"
+    example = "auth.post users.get users.post users.{userId}.address.get users.{userId}.address.put users.{userId}.delete users.{userId}.get users.{userId}.put"
+else:
+    header = "RESTBERTa"
+    paragraph = "Schema"
+    answer = "Answer"
+    example = "auth.key location.city location.city_id location.country location.lat location.lon location.postal_code state units"
+    
 app.register_blueprint(swaggerui_blueprint)
 
 @app.route("/predict",methods=["POST"])
@@ -86,7 +128,7 @@ def api():
 @produces(MIME_TYPE_APPLICATION_XHTML_XML,MIME_TYPE_TEXT_HTML,MIME_TYPE_HYPERMEDIA_V1_JSON,MIME_TYPE_APPLICATION_JSON)
 def base():
     if MIME_TYPE_APPLICATION_XHTML_XML in list(request.accept_mimetypes.values()) or MIME_TYPE_TEXT_HTML in list(request.accept_mimetypes.values()):
-        return render_template("index.html")
+        return render_template("index.html", header=header, paragraph=paragraph, answer=answer, example=example)
     else:
         response = jsonify({
             "_links":[

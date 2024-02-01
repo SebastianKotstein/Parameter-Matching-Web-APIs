@@ -19,7 +19,6 @@ from .input_tokenizer import InputTokenizer
 from .qa_model import QAModel
 from .output_interpreter import OutputInterpreter
 from .lru_cache import LRUCache
-
 import uuid
 
 class InvalidRequestException(Exception):
@@ -28,6 +27,7 @@ class InvalidRequestException(Exception):
         super().__init__(self.message)
 
 class Pipeline:
+    
     def __init__(self, model_checkpoint, best_size = 20, cache_size = 1000) -> None:
         self.tokenizer = InputTokenizer("microsoft/codebert-base")
         self.model = QAModel(model_checkpoint)
